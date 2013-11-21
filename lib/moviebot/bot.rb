@@ -3,6 +3,16 @@ require 'cinch'
 require 'moviebot/configuration'
 
 class Moviebot::Bot
+  USAGE = <<-HELP
+Folgende Befehle kenne ich:
+ !suggest <filmtitel>
+     Schlage einen Film vor. Existiert er schon zähle ich das als Stimme.
+ !vote <filmtitel oder nummer>
+     Stimme für einen Film
+ !list
+     Zeige die Filme sortiert nach Anzahl Stimmen an
+  HELP
+
   def initialize(config)
     movies = Moviebot.load_movie_list config[:movielist]
 
@@ -27,7 +37,7 @@ class Moviebot::Bot
       end
 
       on :message, /!help/ do |m|
-        m.reply "help"
+        m.reply USAGE
       end
     end
 

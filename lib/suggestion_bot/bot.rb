@@ -47,23 +47,26 @@ Folgende Befehle kenne ich:
         c.channels = config[:channels]
       end
 
+      prefix = if config.has_key? :command_prefix
+                 config[:command_prefix] + \_
+               end
 
-      on :message, /!suggest (.*)/ do |m, suggestion|
+      on :message, /!#{prefix}suggest (.*)/ do |m, suggestion|
         message = suggestions.add_suggestion(m.user.nick, suggestion)
         m.reply(REPLIES[message] % suggestion)
       end
 
-      on :message, /!vote (.*)/ do |m, suggestion|
+      on :message, /!#{prefix}vote (.*)/ do |m, suggestion|
         message, name = suggestions.vote(m.user.nick, suggestion)
         m.reply(REPLIES[message] % name)
       end
 
-      on :message, /!unvote (.*)/ do |m, suggestion|
+      on :message, /!#{prefix}unvote (.*)/ do |m, suggestion|
         message, name = suggestions.unvote(m.user.nick, suggestion)
         m.reply(REPLIES[message] % name)
       end
 
-      on :message, /!list/ do |m|
+      on :message, /!#{prefix}list/ do |m|
         ranking = suggestions.list
 
         if ranking.empty?
@@ -75,8 +78,12 @@ Folgende Befehle kenne ich:
         end
       end
 
-      on :message, /!help/ do |m|
+      on :message, /!#{prefix}help/ do |m|
         m.reply USAGE
+      end
+
+      on :message, /!#{prefix}quit/ do |m|
+        quit
       end
     end
 

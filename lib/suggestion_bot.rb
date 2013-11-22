@@ -11,9 +11,9 @@ module SuggestionBot
 
   def self.run
     begin
-      cfg = SuggestionBot.load_configuration
+      cfg = SuggestionBot::Config.load
       Bot.new(cfg)
-    rescue ConfigurationError => e
+    rescue Config::ConfigurationError => e
       puts e.message
     end
   end

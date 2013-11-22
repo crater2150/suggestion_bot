@@ -1,13 +1,16 @@
 # -*- encoding: utf-8 -*-
 require 'xdg'
 require 'suggestion_bot/suggestion_list'
+require 'suggestion_bot/language'
 
-module SuggestionBot
+module SuggestionBot::Config
+  extend self
 
   DEFAULTS = {
     web_server: '127.0.0.1',
-    name: PROJECT_NAME,
-    suggestion_group: "suggestions"
+    name: SuggestionBot::PROJECT_NAME,
+    suggestion_group: "suggestions",
+    lang: "en"
   }
 
   class ConfigurationError < StandardError
@@ -28,8 +31,8 @@ module SuggestionBot
     end
   end
 
-  def self.load_configuration
-    conffile = ARGV[0] || XDG['CONFIG'].find(PROJECT_NAME + '/config.yml')
+  def self.load
+    conffile = ARGV[0] || XDG['CONFIG'].find(SuggestionBot::PROJECT_NAME + '/config.yml')
     raise ConfigurationError.new(:no_configuration) if conffile.nil?
 
     begin
@@ -45,17 +48,30 @@ module SuggestionBot
     end
 
     configure_list_path(config)
+    configure_language(config)
 
     return config
   end
 
-  def self.ensure_data_dir(datafile_path)
+  def configure_language(config)
+    langfile = XDG['CONFIG'].find(
+      "#{SuggestionBot::PROJECT_NAME}/language/#{config[:lang]}.yml"
+    )
+
+    if langfile
+      SuggestionBot::Language::LANG.merge YAML.load_file(langfile)
+    end
+  end
+
+  def ensure_data_dir(datafile_path)
     dirpath = File.dirname(datafile_path)
     Dir.mkdir(dirpath) unless Dir.exist? dirpath
   end
 
-  def self.configure_list_path(config)
-    subpath = "%s/%s.yml" % [ PROJECT_NAME, config[:suggestion_group]]
+  def configure_list_path(config)
+    subpath = "%s/%s.yml" % [
+      SuggestionBot::PROJECT_NAME, config[:suggestion_group]
+    ]
 
     config[:suggestion_list] =
       XDG['DATA'].find(subpath) || XDG['DATA'].to_s + ?/ + subpath
@@ -63,7 +79,7 @@ module SuggestionBot
     ensure_data_dir(config[:suggestion_list])
   end
 
-  def self.load_suggestion_list(file)
+  def load_suggestion_list(file)
     if File.exist? file
       list = YAML.load_file(file)
       list.path = file

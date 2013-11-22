@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 require 'xdg'
-require 'suggestion_bot/vote_list'
+require 'suggestion_bot/suggestion_list'
 
 module SuggestionBot
 
@@ -60,12 +60,14 @@ module SuggestionBot
     config[:suggestion_list] =
       XDG['DATA'].find(subpath) || XDG['DATA'].to_s + ?/ + subpath
 
-    ensure_data_dir(config[:suggestion_list]
+    ensure_data_dir(config[:suggestion_list])
   end
 
   def self.load_suggestion_list(file)
     if File.exist? file
-      return YAML.load_file(file)
+      list = YAML.load_file(file)
+      list.path = file
+      return list
     else
       return SuggestionList.new(file)
     end

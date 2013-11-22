@@ -64,7 +64,7 @@ Folgende Befehle kenne ich:
       end
 
       on :message, /!list/ do |m|
-        ranking = suggestions.list(m)
+        ranking = suggestions.list
 
         if ranking.empty?
           m.reply REPLIES[:no_suggestions]

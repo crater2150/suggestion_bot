@@ -24,7 +24,7 @@ module SuggestionBot
     def add_suggestion(user, title)
       suggestion = Suggestion.new(title)
 
-      if ! (existing = @suggestions.find {|s| s.eql? suggestions }).nil?
+      if ! (existing = @suggestions.find {|s| s.eql? suggestion }).nil?
         if existing.add_vote(user)
           return :existing_voted
         else
@@ -54,7 +54,7 @@ module SuggestionBot
       sug = find(suggestion)
 
       if sug.nil?
-        :no_such_suggestion, suggestion
+        return :no_such_suggestion, suggestion
       else
         if sug.add_vote(user)
           return :voted, sug.name
@@ -80,7 +80,7 @@ module SuggestionBot
       sug = find(suggestion)
 
       if sug.nil?
-        :no_such_suggestion, suggestion
+        return :no_such_suggestion, suggestion
       else
         if sug.delete_vote(user)
           return :unvoted, sug.name
@@ -127,13 +127,13 @@ module SuggestionBot
     end
 
     def add_vote(voter)
-      return false if @votes.include voter
+      return false if @votes.include? voter
       @votes.add voter
       return true
     end
 
     def delete_vote(voter)
-      return false unless @votes.include voter
+      return false unless @votes.include? voter
       @votes.delete voter
       return true
     end

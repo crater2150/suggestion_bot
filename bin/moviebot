@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
-require 'moviebot'
+require 'suggestion_bot'
 
-Moviebot.run
+SuggestionBot.run

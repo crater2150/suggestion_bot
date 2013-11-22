@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
 require 'xdg'
-require 'moviebot/movielist'
+require 'suggestion_bot/vote_list'
 
-module Moviebot
+module SuggestionBot
 
   DEFAULTS = {
     web_server: '127.0.0.1',
     name: PROJECT_NAME,
-    movielist: XDG['CONFIG'].find(PROJECT_NAME + '/movies.yml') ||
-      XDG['CONFIG'].to_s + ?/ + PROJECT_NAME + '/movies.yml'
+    suggestion_group: "suggestions"
   }
 
   class ConfigurationError < StandardError
@@ -45,16 +44,30 @@ module Moviebot
       raise ConfigurationError.new(:missing_key, key) if config[key].nil?
     end
 
+    configure_list_path(config)
+
     return config
   end
 
-  def self.load_movie_list(file)
+  def self.ensure_data_dir(datafile_path)
+    dirpath = File.dirname(datafile_path)
+    Dir.mkdir(dirpath) unless Dir.exist? dirpath
+  end
+
+  def self.configure_list_path(config)
+    subpath = "%s/%s.yml" % [ PROJECT_NAME, config[:suggestion_group]]
+
+    config[:suggestion_list] =
+      XDG['DATA'].find(subpath) || XDG['DATA'].to_s + ?/ + subpath
+
+    ensure_data_dir(config[:suggestion_list]
+  end
+
+  def self.load_suggestion_list(file)
     if File.exist? file
-      puts "YAML MOVIE LIST LOADED"
       return YAML.load_file(file)
     else
-      puts "NEW MOVIE LIST"
-      return MovieList.new(file)
+      return SuggestionList.new(file)
     end
   end
 

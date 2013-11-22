@@ -1,17 +1,17 @@
 #!/usr/bin/env ruby
 # -*- encoding: utf-8 -*-
 
-require "moviebot/version"
-require "moviebot/configuration"
-require "moviebot/bot"
+require "suggestion_bot/version"
+require "suggestion_bot/configuration"
+require "suggestion_bot/bot"
 require "cinch"
 require 'yaml'
 
-module Moviebot
+module SuggestionBot
 
   def self.run
     begin
-      cfg = Moviebot.load_configuration
+      cfg = SuggestionBot.load_configuration
       Bot.new(cfg)
     rescue ConfigurationError => e
       puts e.message

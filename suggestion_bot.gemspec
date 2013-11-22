@@ -1,15 +1,15 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'moviebot/version'
+require 'suggestion_bot/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "moviebot"
-  spec.version       = Moviebot::VERSION
+  spec.name          = "suggestion_bot"
+  spec.version       = SuggestionBot::VERSION
   spec.authors       = ["crater2150"]
   spec.email         = ["me@crater2150.de"]
-  spec.description   = %q{Bot zum Planen von Filmeabenden}
-  spec.summary       = %q{Bot zum Planen von Filmeabenden}
+  spec.description   = %q{Simple IRC bot for voting on stuff}
+  spec.summary       = %q{IRC voting bot}
   spec.homepage      = ""
   spec.license       = "MIT"
 

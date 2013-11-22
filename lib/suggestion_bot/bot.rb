@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 require 'cinch'
-require 'moviebot/configuration'
+require 'suggestion_bot/configuration'
 
-class Moviebot::Bot
+class SuggestionBot::Bot
   USAGE = <<-HELP
 Folgende Befehle kenne ich:
  !suggest <titel>
@@ -23,7 +23,7 @@ Folgende Befehle kenne ich:
       "\"%s\" wurde schon vorgeschlagen und du hast bereits dafür gestimmt",
     added:
       "\"%s\" wurde hinzugefügt",
-    no_such_movie:
+    no_such_suggestion:
       "Ich kenne \"%s\" nicht.",
     voted:
       "Deine Stimme für \"%s\" wurde gezählt",
@@ -33,12 +33,12 @@ Folgende Befehle kenne ich:
       "Deine Stimme für \"%s\" wurde zurückgenommen",
     no_such_vote:
       "Du hast nicht für \"%s\" gestimmt",
-    no_movies:
+    no_suggestions:
       "Noch keine Vorschläge"
   }
 
   def initialize(config)
-    movies = Moviebot.load_movie_list config[:movielist]
+    suggestions = SuggestionBot.load_suggestion_list config[:suggestion_list]
 
     @bot = Cinch::Bot.new do
       configure do |c|
@@ -48,29 +48,29 @@ Folgende Befehle kenne ich:
       end
 
 
-      on :message, /!suggest (.*)/ do |m, movie|
-        message = movies.add_movie(m.user.nick, movie)
-        m.reply(REPLIES[message] % movie)
+      on :message, /!suggest (.*)/ do |m, suggestion|
+        message = suggestions.add_suggestion(m.user.nick, suggestion)
+        m.reply(REPLIES[message] % suggestion)
       end
 
-      on :message, /!vote (.*)/ do |m, movie|
-        message, name = movies.vote(m.user.nick, movie)
+      on :message, /!vote (.*)/ do |m, suggestion|
+        message, name = suggestions.vote(m.user.nick, suggestion)
         m.reply(REPLIES[message] % name)
       end
 
-      on :message, /!unvote (.*)/ do |m, movie|
-        message, name = movies.unvote(m.user.nick, movie)
+      on :message, /!unvote (.*)/ do |m, suggestion|
+        message, name = suggestions.unvote(m.user.nick, suggestion)
         m.reply(REPLIES[message] % name)
       end
 
       on :message, /!list/ do |m|
-        ranking = movies.list(m)
+        ranking = suggestions.list(m)
 
         if ranking.empty?
-          m.reply REPLIES[:no_movies]
+          m.reply REPLIES[:no_suggestions]
         else
-          ranking.each_with_index do |movie,index|
-            m.reply ("(%2d)  " % index) +  movie.to_formatted_s
+          ranking.each_with_index do |suggestion,index|
+            m.reply ("(%2d)  " % index) +  suggestion.to_formatted_s
           end
         end
       end
